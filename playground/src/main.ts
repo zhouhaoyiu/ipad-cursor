@@ -8,7 +8,7 @@ import hljs from "highlight.js/lib/core";
 import javascript from "highlight.js/lib/languages/javascript";
 import typescript from "highlight.js/lib/languages/typescript";
 import { autoAnimatePlugin } from "@formkit/auto-animate/vue";
-import vue from 'vue-highlight.js/lib/languages/vue';
+import vue from "highlight.js/lib/languages/xml";
 import { ipadCursorPlugin } from "../../src/vue";
 
 

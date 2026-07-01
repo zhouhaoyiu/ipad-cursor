@@ -7,13 +7,12 @@ import {
   updateCursor,
   updateConfig,
   disposeCursor,
-  IpadCursorStyle,
-  IpadCursorConfig,
   customCursorStyle,
 } from "..";
+import type { IpadCursorConfig, IpadCursorStyle } from "..";
 
 export const ipadCursorPlugin: Plugin = {
-  install(app: App, options?: IpadCursorConfig): any {    
+  install(app: App, options?: IpadCursorConfig): any {
     initCursor();
     options && updateConfig(options);
 

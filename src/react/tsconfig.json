@@ -3,6 +3,9 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "declaration": true,
-    "emitDeclarationOnly": true
+    "emitDeclarationOnly": true,
+    "moduleResolution": "bundler",
+    "outDir": "../../dist",
+    "rootDir": ".."
   }
 }

@@ -564,7 +564,7 @@ function registerNode(node: Element) {
   let type = node.getAttribute("data-cursor") as ICursorType;
   registeredNodeSet.add(node);
   if (type === "text") registerTextNode(node);
-  if (type === "block") registerBlockNode(node);
+  else if (type === "block") registerBlockNode(node);
   else registeredNodeSet.delete(node);
 }
 
@@ -584,8 +584,10 @@ function extractCustomStyle(node: Element) {
   const styleObj: Record<string, any> = {};
   if (customStyleRaw) {
     customStyleRaw.split(/(;)/).forEach((style) => {
-      const [key, value] = style.split(":").map((s) => s.trim());
-      styleObj[key] = value;
+      const [rawKey, ...rawValue] = style.split(":");
+      const key = rawKey?.trim();
+      if (!key) return;
+      styleObj[key] = rawValue.join(":").trim();
     });
   }
   return styleObj;

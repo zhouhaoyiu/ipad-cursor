@@ -1,7 +1,7 @@
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
-import { readFile, writeFile } from "fs/promises";
+import { copyFile, readFile, rename, rm, writeFile } from "fs/promises";
 import { execa } from "execa";
 import { execSync } from "child_process";
 import chalk from "chalk";
@@ -21,7 +21,7 @@ const isPublishing = process.argv[2] === "--publish";
 
 async function clean() {
   if (!fs.existsSync(`${rootDir}/dist`)) return;
-  await execa("shx", ["rm", "-rf", `${rootDir}/dist`]);
+  await rm(resolve(rootDir, "dist"), { recursive: true, force: true });
 }
 
 async function baseBuild() {
@@ -89,24 +89,21 @@ async function declarationsBuild() {
 
 async function bundleDeclarations() {
   info("Bundling declarations");
-  await execa("shx", [
-    "mv",
-    `${rootDir}/dist/src/index.d.ts`,
-    `${rootDir}/dist/index.d.ts`,
-  ]);
-  await execa("shx", [
-    "cp",
-    `${rootDir}/dist/index.d.ts`,
-    `${rootDir}/src/index.d.ts`,
-  ]);
-  await execa("shx", [
-    "mv",
-    `${rootDir}/dist/src/vue/index.d.ts`,
-    `${rootDir}/dist/vue/index.d.ts`,
-  ]);
-  await execa("shx", ["rm", "-rf", `${rootDir}/dist/src`]);
-  await execa("shx", ["rm", `${rootDir}/dist/index.js`]);
-  await execa("pnpm", ["build:react-ts"]);
+  await rename(
+    resolve(rootDir, "dist/src/index.d.ts"),
+    resolve(rootDir, "dist/index.d.ts")
+  );
+  await copyFile(
+    resolve(rootDir, "dist/index.d.ts"),
+    resolve(rootDir, "src/index.d.ts")
+  );
+  await rename(
+    resolve(rootDir, "dist/src/vue/index.d.ts"),
+    resolve(rootDir, "dist/vue/index.d.ts")
+  );
+  await rm(resolve(rootDir, "dist/src"), { recursive: true, force: true });
+  await rm(resolve(rootDir, "dist/index.js"), { force: true });
+  await execa("corepack", ["pnpm", "run", "build:react-ts"]);
 }
 
 async function addPackageJSON() {
@@ -124,12 +121,11 @@ async function addPackageJSON() {
 
 async function addAssets() {
   info("Writing readme and license.");
-  await execa("shx", [
-    "cp",
-    `${rootDir}/README.md`,
-    `${rootDir}/dist/README.md`,
-  ]);
-  await execa("shx", ["cp", `${rootDir}/LICENSE`, `${rootDir}/dist/LICENSE`]);
+  await copyFile(
+    resolve(rootDir, "README.md"),
+    resolve(rootDir, "dist/README.md")
+  );
+  await copyFile(resolve(rootDir, "LICENSE"), resolve(rootDir, "dist/LICENSE"));
 }
 
 async function prepareForPublishing() {
